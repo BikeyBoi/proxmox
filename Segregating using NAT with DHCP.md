@@ -19,7 +19,7 @@ Steps for Creating a New NAT on Proxmox
 #. Open the ``/etc/network/interfaces`` file (``nano /etc/network/interfaces``).
 #. Add the following configuration:
 
-   .. code-block:: none
+
 
       auto vmbr1
       iface vmbr1 inet static
@@ -34,7 +34,7 @@ Steps for Creating a New NAT on Proxmox
 #. Reload sysctl settings: ``sudo sysctl -p``.
 #. Add NAT rules:
 
-   .. code-block:: bash
+
 
       sudo iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -o vmbr0 -j MASQUERADE
 
@@ -44,20 +44,20 @@ Configuring DHCP for the NAT
 -----------------------------
 #. Install ISC DHCP server:
 
-   .. code-block:: bash
+
 
       sudo apt-get update
       sudo apt-get install isc-dhcp-server
 
 #. Edit the DHCP server configuration file:
 
-   .. code-block:: bash
+
 
       nano /etc/dhcp/dhcpd.conf
 
 #. Add the following configuration:
 
-   .. code-block:: none
+
 
       subnet 192.168.100.0 netmask 255.255.255.0 {
           range 192.168.100.100 192.168.100.200;
