@@ -7,7 +7,7 @@ This guide will assist you in setting up NAT to segregate your machines/containe
 
 Network Topology
 ----------------
-- **Physical Network**: One network card attached to the server (built-in).
+- **Physical Network**: One network card attached to the server (built-in) and connected directly to home router.
 - **Proxmox Server**: The server hosts a running DNS server and a WireGuard VPN server. A new web-facing server for a personal website will be created and placed in the new NAT to segregate it from the rest of the network.
 
 Steps for Creating a New NAT on Proxmox
