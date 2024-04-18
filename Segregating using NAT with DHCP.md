@@ -68,7 +68,9 @@ Configuring DHCP for the NAT
 Adding Clients to the NAT
 -------------------------
 #. Navigate to the server you want to add to the NAT.
+
 #. Open the network tab and select the new network (``vmbr1``).
+
 #. Enable DHCP and check connectivity.
 
 Troubleshooting
