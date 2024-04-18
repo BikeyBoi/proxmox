@@ -40,7 +40,7 @@ Steps for Creating a New NAT on Proxmox
 
 #. Reload sysctl settings: ``sudo sysctl -p``.
 
-#. Add NAT rules:
+#. Add NAT rules(192.168.2.0/24 is the vmbr0 network):
 
 
 
