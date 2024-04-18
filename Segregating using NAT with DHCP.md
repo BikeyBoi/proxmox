@@ -13,10 +13,15 @@ Network Topology
 Steps for Creating a New NAT on Proxmox
 ----------------------------------------
 #. Navigate to the network section under the Proxmox server.
+
 #. Create a new Linux bridge.
+
 #. Assign an IP address, name, and CIDR to the network (e.g., "192.168.100.1/24", "vmbr1") .
+
 #. Access the Proxmox console.
+
 #. Open the ``/etc/network/interfaces`` file (``nano /etc/network/interfaces``).
+
 #. Add the following configuration:
 
 
