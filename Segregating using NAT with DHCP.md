@@ -1,0 +1,77 @@
+Proxmox Networking Setup
+========================
+
+Overview
+--------
+This guide will assist you in setting up NAT to segregate your machines/containers on Proxmox. It covers the configuration of a new Linux bridge network, enabling NAT, configuring DHCP, and connecting clients to the NAT.
+
+Network Topology
+----------------
+- **Physical Network**: One network card attached to the server (built-in).
+- **Proxmox Server**: The server hosts a running DNS server and a WireGuard VPN server. A new web-facing server for a personal website will be created and placed in the new NAT to segregate it from the rest of the network.
+
+Steps for Creating a New NAT on Proxmox
+----------------------------------------
+#. Navigate to the network section under the Proxmox server.
+#. Create a new Linux bridge.
+#. Assign an IP address, name, and CIDR to the network (e.g., "192.168.100.1/24", "vmbr1") .
+#. Access the Proxmox console.
+#. Open the ``/etc/network/interfaces`` file (``nano /etc/network/interfaces``).
+#. Add the following configuration:
+
+   .. code-block:: none
+
+      auto vmbr1
+      iface vmbr1 inet static
+          address 192.168.100.1
+          netmask 255.255.255.0
+          bridge-ports none
+          bridge-stp off
+          bridge-fd 0
+
+#. Exit the editor.
+#. Allow IPv4 forwarding: ``sysctl -w net.ipv4.ip_forward=1``.
+#. Reload sysctl settings: ``sudo sysctl -p``.
+#. Add NAT rules:
+
+   .. code-block:: bash
+
+      sudo iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -o vmbr0 -j MASQUERADE
+
+#. Check the rules: ``sudo iptables -t nat -L`` - you should be able to see the new rules.
+
+Configuring DHCP for the NAT
+-----------------------------
+#. Install ISC DHCP server:
+
+   .. code-block:: bash
+
+      sudo apt-get update
+      sudo apt-get install isc-dhcp-server
+
+#. Edit the DHCP server configuration file:
+
+   .. code-block:: bash
+
+      nano /etc/dhcp/dhcpd.conf
+
+#. Add the following configuration:
+
+   .. code-block:: none
+
+      subnet 192.168.100.0 netmask 255.255.255.0 {
+          range 192.168.100.100 192.168.100.200;
+          option routers 192.168.100.1;
+          option domain-name-servers <dns-server-ip>;
+      }
+
+Adding Clients to the NAT
+-------------------------
+#. Navigate to the server you want to add to the NAT.
+#. Open the network tab and select the new network (``vmbr1``).
+#. Enable DHCP and check connectivity.
+
+Troubleshooting
+---------------
+- Common issues that you might encounter include IP leasing or no internet connectivity.
+- Review the steps outlined above to troubleshoot and resolve any issues.
