@@ -30,8 +30,11 @@ Steps for Creating a New NAT on Proxmox
           bridge-fd 0
 
 #. Exit the editor.
+
 #. Allow IPv4 forwarding: ``sysctl -w net.ipv4.ip_forward=1``.
+
 #. Reload sysctl settings: ``sudo sysctl -p``.
+
 #. Add NAT rules:
 
 
