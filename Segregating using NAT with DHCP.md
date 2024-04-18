@@ -44,7 +44,18 @@ Steps for Creating a New NAT on Proxmox
 
 
 
-      sudo iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -o vmbr0 -j MASQUERADE
+      iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -o vmbr0 -j MASQUERADE
+      iptables -A FORWARD -s 192.168.100.0/24 -d 192.168.2.0/24 -j DROP
+      
+
+#. Make config presistent
+
+      sudo apt-get update
+      sudo apt-get install iptables-persistent
+
+
+      iptables-save > /etc/iptables/rules.v4
+      ip6tables-save > /etc/iptables/rules.v6
 
 #. Check the rules: ``sudo iptables -t nat -L`` - you should be able to see the new rules.
 
