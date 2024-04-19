@@ -68,6 +68,8 @@ Configuring DHCP for the NAT
       sudo apt-get update
       sudo apt-get install isc-dhcp-server
 
+    
+
 #. Edit the DHCP server configuration file:
 
 
@@ -84,6 +86,13 @@ Configuring DHCP for the NAT
           option domain-name-servers <dns-server-ip>;
       }
 
+
+#. Start and enable the DHCP service:
+    
+    sudo systemctl start isc-dhcp-server
+    sudo systemctl enable isc-dhcp-server
+    
+
 Adding Clients to the NAT
 -------------------------
 #. Navigate to the server you want to add to the NAT.
@@ -91,6 +100,13 @@ Adding Clients to the NAT
 #. Open the network tab and select the new network (``vmbr1``).
 
 #. Enable DHCP and check connectivity.
+
+
+
+Test connectivity
+-------------------------
+
+![alt text](screenshots/image1.png)
 
 Troubleshooting
 ---------------
