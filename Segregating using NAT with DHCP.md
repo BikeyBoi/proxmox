@@ -38,7 +38,7 @@ Steps for Creating a New NAT on Proxmox
 
 #. Allow IPv4 forwarding: ``sysctl -w net.ipv4.ip_forward=1``.
 
-#. Reload sysctl settings: ``sudo sysctl -p``.
+#. Reload sysctl settings: `` sysctl -p``.
 
 #. Add NAT rules(192.168.2.0/24 is the vmbr0 network):
 
@@ -50,14 +50,14 @@ Steps for Creating a New NAT on Proxmox
 
 #. Make config presistent
 
-      sudo apt-get update
-      sudo apt-get install iptables-persistent
+       apt-get update
+       apt-get install iptables-persistent
 
 
       iptables-save > /etc/iptables/rules.v4
       ip6tables-save > /etc/iptables/rules.v6
 
-#. Check the rules: ``sudo iptables -t nat -L`` - you should be able to see the new rules.
+#. Check the rules: `` iptables -t nat -L`` - you should be able to see the new rules.
 
 Configuring DHCP for the NAT
 -----------------------------
@@ -65,8 +65,8 @@ Configuring DHCP for the NAT
 
 
 
-      sudo apt-get update
-      sudo apt-get install isc-dhcp-server
+       apt-get update
+       apt-get install isc-dhcp-server
 
     
 
@@ -89,8 +89,8 @@ Configuring DHCP for the NAT
 
 #. Start and enable the DHCP service:
     
-    sudo systemctl start isc-dhcp-server
-    sudo systemctl enable isc-dhcp-server
+     systemctl start isc-dhcp-server
+     systemctl enable isc-dhcp-server
     
 
 Adding Clients to the NAT
