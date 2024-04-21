@@ -95,9 +95,9 @@ Test connectivity
 
 Troubleshooting
 ---------------
-- If you encounter errors when starting isc-dhcp:
+- If you encounter the following error when starting/restarting isc-dhcp:
 
-    ```bash
+    ```
     root@proxmox:~# systemctl restart isc-dhcp-server
     Job for isc-dhcp-server.service failed because the control process exited with error code.
     See "systemctl status isc-dhcp-server.service" and "journalctl -xe" for details.
