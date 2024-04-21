@@ -12,127 +12,108 @@ Network Topology
 
 Steps for Creating a New NAT on Proxmox
 ----------------------------------------
-#. Navigate to the network section under the Proxmox server.
+1. Navigate to the network section under the Proxmox server.
+2. Create a new Linux bridge.
+3. Assign a name, an IP address, and CIDR to the network (e.g., "192.168.100.1/24", "vmbr1").
+4. Access the Proxmox console.
+5. Open the `/etc/network/interfaces` file (`nano /etc/network/interfaces`).
+6. Add the following configuration:
 
-#. Create a new Linux bridge.
+    ```bash
+    auto vmbr1
+    iface vmbr1 inet static
+        address 192.168.100.1
+        netmask 255.255.255.0
+        bridge-ports none
+        bridge-stp off
+        bridge-fd 0
+    ```
 
-#. Assign a name an IP address, and CIDR to the network (e.g., "192.168.100.1/24", "vmbr1") .
+7. Exit the editor.
+8. Allow IPv4 forwarding: `sysctl -w net.ipv4.ip_forward=1`.
+9. Reload sysctl settings: `sysctl -p`.
+10. Add NAT rules (192.168.2.0/24 is the vmbr0 network):
 
-#. Access the Proxmox console.
+    ```bash
+    iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -o vmbr0 -j MASQUERADE
+    iptables -A FORWARD -s 192.168.100.0/24 -d 192.168.2.0/24 -j DROP
+    ```
 
-#. Open the ``/etc/network/interfaces`` file (``nano /etc/network/interfaces``).
+11. Make config persistent:
 
-#. Add the following configuration:
+    ```bash
+    apt-get update
+    apt-get install iptables-persistent
 
+    iptables-save > /etc/iptables/rules.v4
+    ip6tables-save > /etc/iptables/rules.v6
+    ```
 
-
-      auto vmbr1
-      iface vmbr1 inet static
-          address 192.168.100.1
-          netmask 255.255.255.0
-          bridge-ports none
-          bridge-stp off
-          bridge-fd 0
-
-#. Exit the editor.
-
-#. Allow IPv4 forwarding: ``sysctl -w net.ipv4.ip_forward=1``.
-
-#. Reload sysctl settings: `` sysctl -p``.
-
-#. Add NAT rules(192.168.2.0/24 is the vmbr0 network):
-
-
-
-      iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -o vmbr0 -j MASQUERADE
-      iptables -A FORWARD -s 192.168.100.0/24 -d 192.168.2.0/24 -j DROP
-      
-
-#. Make config presistent
-
-       apt-get update
-       apt-get install iptables-persistent
-
-
-      iptables-save > /etc/iptables/rules.v4
-      ip6tables-save > /etc/iptables/rules.v6
-
-#. Check the rules: `` iptables -t nat -L`` - you should be able to see the new rules.
+12. Check the rules: `iptables -t nat -L` - you should be able to see the new rules.
 
 Configuring DHCP for the NAT
 -----------------------------
-#. Install ISC DHCP server:
+1. Install ISC DHCP server:
 
+    ```bash
+    apt-get update
+    apt-get install isc-dhcp-server
+    ```
 
+2. Edit the DHCP server configuration file:
 
-       apt-get update
-       apt-get install isc-dhcp-server
+    ```bash
+    nano /etc/dhcp/dhcpd.conf
+    ```
 
-    
+3. Add the following configuration:
 
-#. Edit the DHCP server configuration file:
+    ```bash
+    subnet 192.168.100.0 netmask 255.255.255.0 {
+        range 192.168.100.100 192.168.100.200;
+        option routers 192.168.100.1;
+        option domain-name-servers <dns-server-ip>;
+    }
+    ```
 
+4. Start and enable the DHCP service:
 
-
-      nano /etc/dhcp/dhcpd.conf
-
-#. Add the following configuration:
-
-
-
-      subnet 192.168.100.0 netmask 255.255.255.0 {
-          range 192.168.100.100 192.168.100.200;
-          option routers 192.168.100.1;
-          option domain-name-servers <dns-server-ip>;
-      }
-
-
-#. Start and enable the DHCP service:
-    
-     systemctl start isc-dhcp-server
-     systemctl enable isc-dhcp-server
-    
+    ```bash
+    systemctl start isc-dhcp-server
+    systemctl enable isc-dhcp-server
+    ```
 
 Adding Clients to the NAT
 -------------------------
-#. Navigate to the server you want to add to the NAT.
-
-#. Open the network tab and select the new network (``vmbr1``).
-
-#. Enable DHCP and check connectivity.
-
-
+1. Navigate to the server you want to add to the NAT.
+2. Open the network tab and select the new network (`vmbr1`).
+3. Enable DHCP and check connectivity.
 
 Test connectivity
 -------------------------
-
 ![alt text](screenshots/image1.png)
 
 Troubleshooting
 ---------------
-- If you get the following error when starting isc-dhcp
+- If you encounter errors when starting isc-dhcp:
 
-      
-      root@proxmox:~# systemctl restart isc-dhcp-server
-      Job for isc-dhcp-server.service failed because the control process exited with error code.
-      See "systemctl status isc-dhcp-server.service" and "journalctl -xe" for details.
+    ```bash
+    root@proxmox:~# systemctl restart isc-dhcp-server
+    Job for isc-dhcp-server.service failed because the control process exited with error code.
+    See "systemctl status isc-dhcp-server.service" and "journalctl -xe" for details.
+    ```
 
-      
+    - Add the default bridge `vmbr0` to the `/etc/default/isc-dhcp-server` file:
 
-Add the default bridge vmbr0 to  (``/etc/default/isc-dhcp-server``) file.
+    ```bash
+    # The default bridge is vmbr0.
+    INTERFACES="vmbr0"
+    ```
 
-It should look like this:
+    - Restart isc-dhcp again:
 
-      # The default bridge is vmbr0.
-      INTERFACES="vmbr0"
-
-
-restart isc-dhcp again
-
-      root@proxmox:~# systemctl restart isc-dhcp-server
-
-
-
-
+    ```bash
+    root@proxmox:~# systemctl restart isc-dhcp-server
+    ```
 
 - Review the steps outlined above to troubleshoot and resolve any other issues you might encounter.
