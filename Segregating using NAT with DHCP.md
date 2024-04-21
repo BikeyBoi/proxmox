@@ -119,7 +119,7 @@ Troubleshooting
 
       
 
-Add the default bridge vmbr0 to  /etc/default/isc-dhcp-server file.
+Add the default bridge vmbr0 to  (``/etc/default/isc-dhcp-server``) file.
 
 It should look like this:
 
