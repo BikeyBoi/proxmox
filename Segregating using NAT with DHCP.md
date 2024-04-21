@@ -110,5 +110,29 @@ Test connectivity
 
 Troubleshooting
 ---------------
-- Common issues that you might encounter include IP leasing or no internet connectivity.
-- Review the steps outlined above to troubleshoot and resolve any issues.
+- If you get the following error when starting isc-dhcp
+
+      
+      root@proxmox:~# systemctl restart isc-dhcp-server
+      Job for isc-dhcp-server.service failed because the control process exited with error code.
+      See "systemctl status isc-dhcp-server.service" and "journalctl -xe" for details.
+
+      
+
+Add the default bridge vmbr0 to  /etc/default/isc-dhcp-server file.
+
+It should look like this:
+
+      # The default bridge is vmbr0.
+      INTERFACES="vmbr0"
+
+
+restart isc-dhcp again
+
+      root@proxmox:~# systemctl restart isc-dhcp-server
+
+
+
+
+
+- Review the steps outlined above to troubleshoot and resolve any other issues you might encounter.
