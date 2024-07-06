@@ -103,11 +103,11 @@ Troubleshooting
     See "systemctl status isc-dhcp-server.service" and "journalctl -xe" for details.
     ```
 
-    - Add the default bridge `vmbr0, vmbr1` to the `/etc/default/isc-dhcp-server` file:
+    - Add the  bridge `vmbr1` to the `/etc/default/isc-dhcp-server` file:
 
     ```bash
     # The default bridge is vmbr0.
-    INTERFACES="vmbr0"
+    INTERFACES="vmbr1"
     ```
 
     - Restart isc-dhcp again:
