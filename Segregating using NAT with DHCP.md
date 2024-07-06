@@ -22,8 +22,9 @@ Steps for Creating a New NAT on Proxmox
     ```bash
     auto vmbr1
     iface vmbr1 inet static
-        address 192.168.100.1
+        address 192.168.100.2/24
         netmask 255.255.255.0
+        gateway 192.168.100.1
         bridge-ports none
         bridge-stp off
         bridge-fd 0
