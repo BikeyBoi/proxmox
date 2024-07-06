@@ -103,7 +103,7 @@ Troubleshooting
     See "systemctl status isc-dhcp-server.service" and "journalctl -xe" for details.
     ```
 
-    - Add the default bridge `vmbr0` to the `/etc/default/isc-dhcp-server` file:
+    - Add the default bridge `vmbr0, vmbr1` to the `/etc/default/isc-dhcp-server` file:
 
     ```bash
     # The default bridge is vmbr0.
